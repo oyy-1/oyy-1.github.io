@@ -146,6 +146,73 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/10/31/PHP%E6%95%B0%E7%BB%84%E6%8E%92%E5%BA%8F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="John Doe">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="你也喜欢柯基吗？">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/10/31/PHP%E6%95%B0%E7%BB%84%E6%8E%92%E5%BA%8F/" class="post-title-link" itemprop="url">PHP数组排序</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-10-30 23:46:42 / 修改时间：22:21:39" itemprop="dateCreated datePublished" datetime="2022-10-30T23:46:42-04:00">2022-10-30</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <pre><code>sort() - 对数组进行升序排列
+rsort() - 对数组进行降序排列
+asort() - 根据关联数组的值，对数组进行升序排列
+ksort() - 根据关联数组的键，对数组进行升序排列
+arsort() - 根据关联数组的值，对数组进行降序排列
+krsort() - 根据关联数组的键，对数组进行降序排列
+</code></pre>
+<p>eg：<br>    <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">$cars=array(&quot;Volvo&quot;,&quot;BMW&quot;,&quot;Toyota&quot;);</span><br><span class="line">sort($cars);</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure><br>//输出Array ( [0] =&gt; BMW [1] =&gt; Toyota [2] =&gt; Volvo )<br>    <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">$numbers=array(4,6,2,22,11);</span><br><span class="line">sort($numbers);</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure><br>//输出Array ( [0] =&gt; 2 [1] =&gt; 4 [2] =&gt; 6 [3] =&gt; 11 [4] =&gt; 22 )<br>    <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">$cars=array(&quot;Volvo&quot;,&quot;BMW&quot;,&quot;Toyota&quot;);</span><br><span class="line">rsort($cars);</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure><br>//输出Array ( [0] =&gt; Volvo [1] =&gt; Toyota [2] =&gt; BMW )<br>    <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">$numbers=array(4,6,2,22,11);</span><br><span class="line">rsort($numbers);</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure><br>//输出Array ( [0] =&gt; 22 [1] =&gt; 11 [2] =&gt; 6 [3] =&gt; 4 [=&gt; 2 )<br>    <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">$age=array(&quot;Peter&quot;=&gt;&quot;35&quot;,&quot;Ben&quot;=&gt;&quot;37&quot;,&quot;Joe&quot;=&gt;&quot;43&quot;); </span><br><span class="line">asort($age); </span><br><span class="line">print_r($age); </span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure><br>//输出Array ( [Peter] =&gt; 35 [Ben] =&gt; 37 [Joe] =&gt; 43 )<br>    <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">   &lt;?php</span><br><span class="line">$age=array(&quot;Peter&quot;=&gt;&quot;35&quot;,&quot;Ben&quot;=&gt;&quot;37&quot;,&quot;Joe&quot;=&gt;&quot;43&quot;);</span><br><span class="line">ksort($age);</span><br><span class="line">print_r($age);</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure><br>//输出Array ( [Ben] =&gt; 37 [Joe] =&gt; 43 [Peter] =&gt; 35 )<br>    <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">$age=array(&quot;Peter&quot;=&gt;&quot;35&quot;,&quot;Ben&quot;=&gt;&quot;37&quot;,&quot;Joe&quot;=&gt;&quot;43&quot;);</span><br><span class="line">arsort($age);</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure><br>//输出Array ( [Joe] =&gt; 43 [Ben] =&gt; 37 [Peter] =&gt; 35 )<br>    <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">$age=array(&quot;Peter&quot;=&gt;&quot;35&quot;,&quot;Ben&quot;=&gt;&quot;37&quot;,&quot;Joe&quot;=&gt;&quot;43&quot;);</span><br><span class="line">krsort($age);</span><br><span class="line">print_r($age);</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure><br>//输出Array ( [Peter] =&gt; 35 [Joe] =&gt; 43 [Ben] =&gt; 37 ) </p>
+<p>升序以单词首字母的顺序（或数字的大小）进行排序，降序则反之。<br>数组的键就是数组内变量的首字母。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2022/10/24/%E5%86%85%E5%AD%98/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -653,7 +720,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">7</span>
+          <span class="site-state-item-count">8</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
