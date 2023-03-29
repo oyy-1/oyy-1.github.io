@@ -179,7 +179,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="An elegant Material-Design theme for Hexo"></span>
+            <span id="subtitle" data-typed-text="你也喜欢柯基吗"></span>
           
         </div>
 
@@ -210,6 +210,39 @@
               <div class="col-12 col-md-10 m-auto">
                 
 
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2023/03/22/xss-labs/" target="_self">
+          xss-labs
+        </a>
+      </h1>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2023/03/22/xss-labs/" target="_self">
+        <div>
+          这几天感受了一下数字中国和nkctf的题，基本上都还不会做，所以又回来刷靶场了在DVWA中我们对xss已经有了一个认识，这里就直接开做吧 level-1直接进入题目在url 中发现注入点，我们尝试注入最简单的payload &lt;script&gt;alert(&#39;xss&#39;)&lt;/script&gt;  成功了，我们回头看看代码  $str &#x3D; $_GET[“name
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2023-03-22 15:59" pubdate>
+              2023-03-22
+            </time>
+          </div>
+        
+        
+        
+      </div>
+    </article>
+  </div>
 
   <div class="row mx-auto index-card">
     
@@ -499,39 +532,6 @@
             <i class="iconfont icon-date"></i>
             <time datetime="2022-12-02 23:51" pubdate>
               2022-12-02
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/12/01/sqli-labs-less23-28/" target="_self">
-          sqli-labs-less23-28
-        </a>
-      </h1>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2022/12/01/sqli-labs-less23-28/" target="_self">
-        <div>
-          可以发现，我们在第10关之后的通关速度变快了，因为后面的关卡基本上都是相似的东西，我们只需要将其简要的修改就可以了。 Less23第23关重新回到get请求，会发现输入单引号报错，但是注释符不管用了。可以猜测注释符被过滤了，我们来到源代码中查询证实了我们的猜测，之前提到过使用or ‘1’&#x3D;’1来进行注释，我们这里来试试，正常回显，所以这个方法是正确的，接下来我们就可以使用联合注入来进行查
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-12-01 23:58" pubdate>
-              2022-12-01
             </time>
           </div>
         
